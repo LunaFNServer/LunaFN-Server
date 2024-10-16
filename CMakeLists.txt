@@ -17,7 +17,10 @@ include(cmake/CPM.cmake)
 
 CPMAddPackage("gh:fmtlib/fmt#10.2.1")
 CPMAddPackage("gh:gabime/spdlog@1.14.1")
-target_link_libraries(${PROJECT_NAME} PUBLIC fmt spdlog)
+CPMAddPackage("gh:tobiaslocker/base64#387b32f")
+CPMAddPackage("gh:nlohmann/json#6325839")
+target_link_libraries(${PROJECT_NAME} PUBLIC fmt spdlog nlohmann_json)
+include_directories(${base64_SOURCE_DIR}/include/)
 
 FetchContent_Declare(curl
     URL https://curl.se/download/curl-8.5.0.tar.gz
@@ -35,6 +38,12 @@ else()
     message(STATUS "didnt find curl :(((((")
 endif()
 
+FetchContent_Declare(OpenSSL
+    URL https://github.com/openssl/openssl/releases/download/openssl-3.3.2/openssl-3.3.2.tar.gz
+    DOWNLOAD_EXTRACT_TIMESTAMP true
+    OVERRIDE_FIND_PACKAGE # this one
+)
+FetchContent_MakeAvailable(OpenSSL)
 
 include(FetchContent)
 FetchContent_Declare(asio
@@ -54,7 +63,8 @@ target_link_libraries(asio INTERFACE Threads::Threads)
 set(ASIO_INCLUDE_DIR "${asio_SOURCE_DIR}/asio/include")
 
 CPMAddPackage("gh:CrowCpp/Crow#v1.2.0")
+CPMAddPackage("gh:Thalhammer/jwt-cpp#83703d7")
 
 include_directories("${asio_SOURCE_DIR}/asio/include" "${Crow_SOURCE_DIR}/include")
 
-target_link_libraries(${PROJECT_NAME} INTERFACE CURL::libcurl CURL::curl asio Crow::Crow)
+target_link_libraries(${PROJECT_NAME} INTERFACE CURL::libcurl CURL::curl asio Crow::Crow jwt-cpp)
