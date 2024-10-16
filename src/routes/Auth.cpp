@@ -15,9 +15,11 @@ void Routes::Auth::setupAuthRoutes() {
 
         try
         {
+            if (req.get_header_value("authorization").empty()) throw std::runtime_error("invalid client id");
+
             clientIDList = Utils::String::split(base64::from_base64(Utils::String::split(req.get_header_value("authorization"), ' ')[1]), ':');
 
-            if (clientIDList.at(1).empty()) throw new std::exception("invalid client id");
+            if (clientIDList.at(1).empty()) throw std::runtime_error("invalid client id");
 
             clientID = clientIDList.at(0);
         }
@@ -29,6 +31,11 @@ void Routes::Auth::setupAuthRoutes() {
                 "It appears that your Authorization header may be invalid or not present, please verify that you are sending the correct headers.",
                 {}, 1011, "invalid_client", 400
             );
+        }
+
+        auto grantType = req.get_body_params().get("grant_type");
+        if (grantType == "client_credentials") {
+            auto ip = req.remote_ip_address;
         }
 
         res.end();

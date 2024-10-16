@@ -3,7 +3,7 @@
 
 The all in one Backend + Gameserver for Fortnite written in C++
 
-The backend is essentially a port of LawinServerV2 from NodeJS to C++, while the gameserver is custom and has significant changes from other servers.  
+The backend is essentially a port of [LawinServerV2](https://github.com/Lawin0129/LawinServerV2) from NodeJS to C++, while the gameserver is custom and has significant changes from other servers.  
 You can control the backend and the gameserver from a central control panel GUI
 
 # TODO

@@ -18,8 +18,10 @@ include(cmake/CPM.cmake)
 CPMAddPackage("gh:fmtlib/fmt#10.2.1")
 CPMAddPackage("gh:gabime/spdlog@1.14.1")
 CPMAddPackage("gh:tobiaslocker/base64#387b32f")
-CPMAddPackage("gh:nlohmann/json#6325839")
-target_link_libraries(${PROJECT_NAME} PUBLIC fmt spdlog nlohmann_json)
+CPMAddPackage("gh:nlohmann/json#v3.11.3")
+
+CPMAddPackage("gh:crashoz/uuid_v4#bae4100")
+target_link_libraries(${PROJECT_NAME} PUBLIC fmt spdlog nlohmann_json uuid_v4)
 include_directories(${base64_SOURCE_DIR}/include/)
 
 FetchContent_Declare(curl
@@ -63,8 +65,9 @@ target_link_libraries(asio INTERFACE Threads::Threads)
 set(ASIO_INCLUDE_DIR "${asio_SOURCE_DIR}/asio/include")
 
 CPMAddPackage("gh:CrowCpp/Crow#v1.2.0")
-CPMAddPackage("gh:Thalhammer/jwt-cpp#83703d7")
+
+CPMAddPackage("gh:pokowaka/jwt-cpp#3ce24c1")
 
 include_directories("${asio_SOURCE_DIR}/asio/include" "${Crow_SOURCE_DIR}/include")
 
-target_link_libraries(${PROJECT_NAME} INTERFACE CURL::libcurl CURL::curl asio Crow::Crow jwt-cpp)
+target_link_libraries(${PROJECT_NAME} INTERFACE CURL::libcurl CURL::curl asio Crow::Crow JWT)
