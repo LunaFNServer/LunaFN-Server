@@ -7,6 +7,7 @@ void Webserver::startWebserver() {
     });
 
     Routes::setupAllRoutes();
+    TokenManager::get().getTokens();
 
     this->app
         .port(18080)

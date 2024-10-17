@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=x86-64-v3")
 
 project(LunaServer VERSION 1.0.0)
 
@@ -19,7 +20,6 @@ CPMAddPackage("gh:fmtlib/fmt#10.2.1")
 CPMAddPackage("gh:gabime/spdlog@1.14.1")
 CPMAddPackage("gh:tobiaslocker/base64#387b32f")
 CPMAddPackage("gh:nlohmann/json#v3.11.3")
-
 CPMAddPackage("gh:crashoz/uuid_v4#bae4100")
 target_link_libraries(${PROJECT_NAME} PUBLIC fmt spdlog nlohmann_json uuid_v4)
 include_directories(${base64_SOURCE_DIR}/include/)
@@ -40,13 +40,6 @@ else()
     message(STATUS "didnt find curl :(((((")
 endif()
 
-FetchContent_Declare(OpenSSL
-    URL https://github.com/openssl/openssl/releases/download/openssl-3.3.2/openssl-3.3.2.tar.gz
-    DOWNLOAD_EXTRACT_TIMESTAMP true
-    OVERRIDE_FIND_PACKAGE # this one
-)
-FetchContent_MakeAvailable(OpenSSL)
-
 include(FetchContent)
 FetchContent_Declare(asio
   GIT_REPOSITORY  https://github.com/chriskohlhoff/asio.git
@@ -66,8 +59,18 @@ set(ASIO_INCLUDE_DIR "${asio_SOURCE_DIR}/asio/include")
 
 CPMAddPackage("gh:CrowCpp/Crow#v1.2.0")
 
-CPMAddPackage("gh:pokowaka/jwt-cpp#3ce24c1")
+if (APPLE)
+    list(APPEND CMAKE_PREFIX_PATH "/usr/local/Cellar")
+endif()
 
-include_directories("${asio_SOURCE_DIR}/asio/include" "${Crow_SOURCE_DIR}/include")
+find_package(OpenSSL REQUIRED)
+target_link_libraries(${PROJECT_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto)
 
-target_link_libraries(${PROJECT_NAME} INTERFACE CURL::libcurl CURL::curl asio Crow::Crow JWT)
+set(JWT_BUILD_EXAMPLES OFF CACHE BOOL "disable building examples" FORCE)
+set(JWT_BUILD_TESTS OFF CACHE BOOL "disable building tests" FORCE)
+set(JWT_BUILD_DOCS OFF CACHE BOOL "disable building docs" FORCE)
+CPMAddPackage("gh:Thalhammer/jwt-cpp#83703d7")
+
+include_directories("${asio_SOURCE_DIR}/asio/include" "${Crow_SOURCE_DIR}/include" "${OPENSSL_INCLUDE_DIR}" "${jwt-cpp_SOURCE_DIR}/include")
+
+target_link_libraries(${PROJECT_NAME} INTERFACE CURL::libcurl CURL::curl asio Crow::Crow jwt-cpp)
