@@ -3,7 +3,9 @@
 #include <regex>
 #include <filesystem>
 #include <fstream>
+#include <chrono>
 
+#include <spdlog/spdlog.h>
 #include <fmt/format.h>
 #include <jwt-cpp/jwt.h>
 #include <jwt-cpp/traits/nlohmann-json/traits.h>
@@ -16,6 +18,15 @@ namespace fs = std::filesystem;
 
 class TokenManager {
 public:
+    typedef struct ClientToken {
+        std::string ip;
+        std::string token;
+    } ClientToken;
+
+    typedef struct AccessToken {
+        std::string accountID;
+    } AccessToken;
+
     static TokenManager& get() {
         static TokenManager instance;
         return instance;
@@ -26,4 +37,8 @@ public:
 
     std::string jwt_secret = Utils::Functions::MakeID();
     nlohmann::json tokens;
+
+    std::vector<std::string> accessTokens;
+    std::vector<std::string> refreshTokens;
+    std::vector<std::string> clientTokens;
 };

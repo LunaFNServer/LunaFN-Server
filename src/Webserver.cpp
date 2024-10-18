@@ -7,7 +7,11 @@ void Webserver::startWebserver() {
     });
 
     Routes::setupAllRoutes();
-    TokenManager::get().getTokens();
+    try {
+        TokenManager::get().getTokens();
+    } catch(std::exception& e) {
+        spdlog::info("Getting Tokens Exception: {}", e.what());
+    }
 
     this->app
         .port(18080)
